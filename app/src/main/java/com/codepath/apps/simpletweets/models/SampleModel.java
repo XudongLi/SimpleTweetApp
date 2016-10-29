@@ -1,6 +1,6 @@
 package com.codepath.apps.simpletweets.models;
 
-import com.codepath.apps.simpletweets.MyDatabase;
+import com.codepath.apps.simpletweets.persistent.MyDatabase;
 import com.raizlabs.android.dbflow.annotation.Column;
 import com.raizlabs.android.dbflow.annotation.PrimaryKey;
 import com.raizlabs.android.dbflow.annotation.Table;

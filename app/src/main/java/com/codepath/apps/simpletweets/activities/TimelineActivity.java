@@ -1,10 +1,14 @@
-package com.codepath.apps.simpletweets;
+package com.codepath.apps.simpletweets.activities;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.ListView;
 
+import com.codepath.apps.simpletweets.R;
+import com.codepath.apps.simpletweets.adapters.TweetsArrayAdapter;
+import com.codepath.apps.simpletweets.applications.TwitterApplication;
+import com.codepath.apps.simpletweets.clients.TwitterClient;
 import com.codepath.apps.simpletweets.models.Tweet;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
