@@ -24,19 +24,31 @@ public class TweetsArrayAdapter extends ArrayAdapter<Tweet> {
     public View getView(int position, View convertView, ViewGroup parent) {
         Tweet tweet = getItem(position);
 
+        ViewHolder viewHolder; // lookup cached view in tag
+
         if(convertView == null) {
+            viewHolder = new ViewHolder();
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.item_tweet, parent, false);
+            viewHolder.tvUserName = (TextView) convertView.findViewById(R.id.tvUserName);
+            viewHolder.tvBody = (TextView) convertView.findViewById(R.id.tvTweetBody);
+            viewHolder.ivProfileImage = (ImageView) convertView.findViewById(R.id.ivProfile);
+
+            convertView.setTag(viewHolder);
+        } else {
+            viewHolder = (ViewHolder) convertView.getTag();
         }
 
-        ImageView ivProfileImage = (ImageView) convertView.findViewById(R.id.ivProfile);
-        TextView tvUserName = (TextView) convertView.findViewById(R.id.tvUserName);
-        TextView tvBody = (TextView) convertView.findViewById(R.id.tvTweetBody);
-
-        tvUserName.setText(tweet.getUser().getScreenName());
-        tvBody.setText(tweet.getBody());
-        ivProfileImage.setImageResource(android.R.color.transparent); // clear out the old image for a recycled view
-        Picasso.with(getContext()).load(tweet.getUser().getProfileImageUrl()).into(ivProfileImage);
+        viewHolder.tvUserName.setText(tweet.getUser().getScreenName());
+        viewHolder.tvBody.setText(tweet.getBody());
+        viewHolder.ivProfileImage.setImageResource(android.R.color.transparent); // clear out the old image for a recycled view
+        Picasso.with(getContext()).load(tweet.getUser().getProfileImageUrl()).into(viewHolder.ivProfileImage);
 
         return convertView;
+    }
+
+    private static class ViewHolder {
+        TextView tvUserName;
+        TextView tvBody;
+        ImageView ivProfileImage;
     }
 }
