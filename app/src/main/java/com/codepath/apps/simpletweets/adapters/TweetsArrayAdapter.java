@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import com.codepath.apps.simpletweets.R;
 import com.codepath.apps.simpletweets.models.Tweet;
+import com.codepath.apps.simpletweets.utils.DateParser;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -29,7 +30,9 @@ public class TweetsArrayAdapter extends ArrayAdapter<Tweet> {
         if(convertView == null) {
             viewHolder = new ViewHolder();
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.item_tweet, parent, false);
-            viewHolder.tvUserName = (TextView) convertView.findViewById(R.id.tvUserName);
+            viewHolder.tvName = (TextView) convertView.findViewById(R.id.tvName);
+            viewHolder.tvScreenName = (TextView) convertView.findViewById(R.id.tvScreenName);
+            viewHolder.tvTimeStamp = (TextView) convertView.findViewById(R.id.tvTimeStamp);
             viewHolder.tvBody = (TextView) convertView.findViewById(R.id.tvTweetBody);
             viewHolder.ivProfileImage = (ImageView) convertView.findViewById(R.id.ivProfile);
 
@@ -38,7 +41,9 @@ public class TweetsArrayAdapter extends ArrayAdapter<Tweet> {
             viewHolder = (ViewHolder) convertView.getTag();
         }
 
-        viewHolder.tvUserName.setText(tweet.getUser().getScreenName());
+        viewHolder.tvName.setText(tweet.getUser().getName());
+        viewHolder.tvScreenName.setText("@" + tweet.getUser().getScreenName());
+        viewHolder.tvTimeStamp.setText(DateParser.getRelativeTimeAgo(tweet.getCreatedAt()));
         viewHolder.tvBody.setText(tweet.getBody());
         viewHolder.ivProfileImage.setImageResource(android.R.color.transparent); // clear out the old image for a recycled view
         Picasso.with(getContext()).load(tweet.getUser().getProfileImageUrl()).into(viewHolder.ivProfileImage);
@@ -47,7 +52,9 @@ public class TweetsArrayAdapter extends ArrayAdapter<Tweet> {
     }
 
     private static class ViewHolder {
-        TextView tvUserName;
+        TextView tvName;
+        TextView tvScreenName;
+        TextView tvTimeStamp;
         TextView tvBody;
         ImageView ivProfileImage;
     }
