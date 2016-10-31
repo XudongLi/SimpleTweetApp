@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     tools:context="com.codepath.apps.simpletweets.activities.TimelineActivity">
 
-    <ListView
+    <android.support.v7.widget.RecyclerView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_alignParentTop="true"
@@ -15,5 +15,5 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
-        android:id="@+id/lvTweets" />
+        android:id="@+id/rvTweets" />
 </RelativeLayout>
