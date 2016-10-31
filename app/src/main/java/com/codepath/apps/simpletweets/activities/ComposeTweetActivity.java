@@ -12,10 +12,12 @@ import android.widget.EditText;
 import com.codepath.apps.simpletweets.R;
 import com.codepath.apps.simpletweets.applications.TwitterApplication;
 import com.codepath.apps.simpletweets.clients.TwitterClient;
+import com.codepath.apps.simpletweets.models.Tweet;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 
 import org.json.JSONObject;
+import org.parceler.Parcels;
 
 import cz.msebera.android.httpclient.Header;
 
@@ -64,7 +66,9 @@ public class ComposeTweetActivity extends AppCompatActivity {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 Log.d("DEBUG", response.toString());
+                Tweet tweetCreated = Tweet.fromJSON(response);
                 Intent result = new Intent();
+                result.putExtra("newTweet", Parcels.wrap(tweetCreated));
                 setResult(RESULT_OK, result);
                 finish();
             }

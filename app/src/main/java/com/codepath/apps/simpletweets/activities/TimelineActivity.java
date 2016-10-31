@@ -21,6 +21,7 @@ import com.loopj.android.http.RequestParams;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.parceler.Parcels;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -142,7 +143,9 @@ public class TimelineActivity extends AppCompatActivity {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == RESULT_OK && requestCode == 20) {
-            refreshTimeline();
+            Tweet newTweet = (Tweet) Parcels.unwrap(data.getParcelableExtra("newTweet"));
+            tweets.add(0, newTweet);
+            aTweets.notifyDataSetChanged();
         }
     }
 }

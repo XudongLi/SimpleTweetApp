@@ -3,9 +3,11 @@ package com.codepath.apps.simpletweets.models;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.parceler.Parcel;
 
 import java.util.ArrayList;
 
+@Parcel
 public class Tweet {
 
     // List out the attribute
