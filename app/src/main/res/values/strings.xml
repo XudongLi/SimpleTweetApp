@@ -4,5 +4,7 @@
     <string name="app_name">SimpleTweets</string>
     <string name="login_label">CONNECT TO TWITTER</string>
     <string name="activity_timeline_title">Home Timeline</string>
+    <string name="start_to_tweet">Start to tweet ...</string>
+    <string name="tweet">Tweet</string>
 
 </resources>
