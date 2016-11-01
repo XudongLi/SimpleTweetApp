@@ -2,6 +2,7 @@ package com.codepath.apps.simpletweets.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -37,6 +38,7 @@ public class TimelineActivity extends AppCompatActivity {
     private ArrayList<Tweet> tweets;
     private TweetsAdapter aTweets;
     private RecyclerView rvTweets;
+    private SwipeRefreshLayout swipeContainer;
 
     // Field for TwitterClient Pagination
     private long sinceId;
@@ -53,7 +55,7 @@ public class TimelineActivity extends AppCompatActivity {
         client = TwitterApplication.getRestClient();
         sinceId = 1L;
         maxId = Long.MAX_VALUE - 1; // call twitter api with Long.MAX_VALUE will get internal failure
-        refreshTimeline();
+        populateTimeline();
     }
 
     private void initializeViews() {
@@ -66,7 +68,6 @@ public class TimelineActivity extends AppCompatActivity {
         rvTweets.setAdapter(aTweets);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         rvTweets.setLayoutManager(linearLayoutManager);
-
         scrollListener = new EndlessRecyclerViewScrollListener(linearLayoutManager) {
             @Override
             public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
@@ -74,6 +75,19 @@ public class TimelineActivity extends AppCompatActivity {
             }
         };
         rvTweets.addOnScrollListener(scrollListener);
+
+        swipeContainer = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
+        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                refreshTimeline();
+            }
+        });
+        // Configure the refreshing colors
+        swipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright,
+                android.R.color.holo_green_light,
+                android.R.color.holo_orange_light,
+                android.R.color.holo_red_light);
     }
 
     private void populateTimeline() {
@@ -115,6 +129,7 @@ public class TimelineActivity extends AppCompatActivity {
                 tweets.addAll(newTweets);
                 aTweets.notifyItemRangeInserted(0, newTweets.size());
                 maxId = newTweets.get(newTweets.size() - 1).getUid() - 1; // The id of last tweet minus 1
+                swipeContainer.setRefreshing(false);
             }
 
             @Override
