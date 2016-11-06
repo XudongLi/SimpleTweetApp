@@ -24,7 +24,7 @@ import java.util.List;
 
 import cz.msebera.android.httpclient.Header;
 
-public class HomeTimelineFragment extends TweetsListFragment {
+public class MentionsTimelineFragment extends TweetsListFragment {
     private static final int TIMELINE_COUNT = 25;
 
     private TwitterClient client;
@@ -44,7 +44,7 @@ public class HomeTimelineFragment extends TweetsListFragment {
         client = TwitterApplication.getRestClient();
         sinceId = 1L;
         maxId = Long.MAX_VALUE - 1; // call twitter api with Long.MAX_VALUE will get internal failure
-        populateTimeline();
+        refreshTimeline();
     }
 
     @Nullable
@@ -73,15 +73,17 @@ public class HomeTimelineFragment extends TweetsListFragment {
         params.put("count", TIMELINE_COUNT);
         params.put("max_id", maxId);
 
-        client.getHomeTimeline(params, new JsonHttpResponseHandler(){
+        client.getMentionsTimeline(params, new JsonHttpResponseHandler(){
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
                 Log.d("DEBUG", response.toString());
                 List<Tweet> newTweets = Tweet.fromJSONArray(response);
-                populateTweets(newTweets);
-                maxId = newTweets.get(newTweets.size() - 1).getUid() - 1; // The id of last tweet minus 1
-                long newestTweetId = newTweets.get(0).getUid();
-                sinceId = (sinceId > newestTweetId) ? sinceId : newestTweetId;
+                if(!newTweets.isEmpty()) {
+                    populateTweets(newTweets);
+                    maxId = newTweets.get(newTweets.size() - 1).getUid() - 1; // The id of last tweet minus 1
+                    long newestTweetId = newTweets.get(0).getUid();
+                    sinceId = (sinceId > newestTweetId) ? sinceId : newestTweetId;
+                }
             }
 
             @Override
@@ -95,14 +97,16 @@ public class HomeTimelineFragment extends TweetsListFragment {
         RequestParams params = new RequestParams();
         params.put("count", TIMELINE_COUNT);
 
-        client.getHomeTimeline(params, new JsonHttpResponseHandler(){
+        client.getMentionsTimeline(params, new JsonHttpResponseHandler(){
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
                 Log.d("DEBUG", response.toString());
                 List<Tweet> newTweets = Tweet.fromJSONArray(response);
-                refreshTweets(newTweets);
-                maxId = newTweets.get(newTweets.size() - 1).getUid() - 1; // The id of last tweet minus 1
-                setRefreshingStateFalse();
+                if(!newTweets.isEmpty()) {
+                    refreshTweets(newTweets);
+                    maxId = newTweets.get(newTweets.size() - 1).getUid() - 1; // The id of last tweet minus 1
+                    setRefreshingStateFalse();
+                }
             }
 
             @Override

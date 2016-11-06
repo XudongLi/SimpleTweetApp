@@ -35,7 +35,7 @@
         android:layout_height="match_parent"
         android:layout_below="@+id/toolbar"
         android:id="@+id/fragment_timeline"
-        android:name="com.codepath.apps.simpletweets.fragments.TweetsListFragment"
+        android:name="com.codepath.apps.simpletweets.fragments.MentionsTimelineFragment"
         tools:layout="@layout/fragment_tweets_list">
     </fragment>
 
