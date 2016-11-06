@@ -6,4 +6,9 @@
         android:icon="@android:drawable/ic_menu_add"
         android:title="Composite"
         app:showAsAction="always"/>
+    <item android:id="@+id/action_profile"
+        android:orderInCategory="11"
+        android:icon="@drawable/ic_profile"
+        android:title="Profile"
+        app:showAsAction="always"/>
 </menu>

@@ -43,7 +43,8 @@
         <activity
             android:name=".activities.TimelineActivity"
             android:label="" />
-        <activity android:name=".activities.ComposeTweetActivity"></activity>
+        <activity android:name=".activities.ComposeTweetActivity" />
+        <activity android:name=".activities.ProfileActivity" />
     </application>
 
 </manifest>
