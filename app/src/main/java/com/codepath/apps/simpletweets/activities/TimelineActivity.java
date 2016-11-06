@@ -12,9 +12,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.codepath.apps.simpletweets.R;
-import com.codepath.apps.simpletweets.adapters.TweetsAdapter;
 import com.codepath.apps.simpletweets.applications.TwitterApplication;
 import com.codepath.apps.simpletweets.clients.TwitterClient;
+import com.codepath.apps.simpletweets.fragments.TweetsListFragment;
 import com.codepath.apps.simpletweets.models.Tweet;
 import com.codepath.apps.simpletweets.utils.EndlessRecyclerViewScrollListener;
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -24,7 +24,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.parceler.Parcels;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import cz.msebera.android.httpclient.Header;
@@ -33,12 +32,9 @@ public class TimelineActivity extends AppCompatActivity {
 
     private static final int TIMELINE_COUNT = 25;
 
+    private TweetsListFragment tweetsListFragment;
     private Toolbar toolbar;
     private TwitterClient client;
-    private ArrayList<Tweet> tweets;
-    private TweetsAdapter aTweets;
-    private RecyclerView rvTweets;
-    private SwipeRefreshLayout swipeContainer;
 
     // Field for TwitterClient Pagination
     private long sinceId;
@@ -46,48 +42,43 @@ public class TimelineActivity extends AppCompatActivity {
 
     // Store a member variable for the listener
     private EndlessRecyclerViewScrollListener scrollListener;
+    private SwipeRefreshLayout.OnRefreshListener swipeRefreshListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_timeline);
         initializeViews();
+        retrieveFragment(savedInstanceState);
         client = TwitterApplication.getRestClient();
         sinceId = 1L;
         maxId = Long.MAX_VALUE - 1; // call twitter api with Long.MAX_VALUE will get internal failure
         populateTimeline();
     }
 
-    private void initializeViews() {
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-        rvTweets = (RecyclerView) findViewById(R.id.rvTweets);
-        tweets = new ArrayList<>();
-        aTweets = new TweetsAdapter(this, tweets);
-        rvTweets.setAdapter(aTweets);
+    private void retrieveFragment(Bundle savedInstanceState) {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
-        rvTweets.setLayoutManager(linearLayoutManager);
         scrollListener = new EndlessRecyclerViewScrollListener(linearLayoutManager) {
             @Override
             public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
                 populateTimeline();
             }
         };
-        rvTweets.addOnScrollListener(scrollListener);
-
-        swipeContainer = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
-        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+        swipeRefreshListener = new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 refreshTimeline();
             }
-        });
-        // Configure the refreshing colors
-        swipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright,
-                android.R.color.holo_green_light,
-                android.R.color.holo_orange_light,
-                android.R.color.holo_red_light);
+        };
+        if (savedInstanceState == null) {
+            tweetsListFragment = (TweetsListFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_timeline);
+        }
+        tweetsListFragment.setListenersOnStart(linearLayoutManager, scrollListener, swipeRefreshListener);
+    }
+
+    private void initializeViews() {
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
     }
 
     private void populateTimeline() {
@@ -99,10 +90,8 @@ public class TimelineActivity extends AppCompatActivity {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
                 Log.d("DEBUG", response.toString());
-                int curSize = aTweets.getItemCount();
                 List<Tweet> newTweets = Tweet.fromJSONArray(response);
-                tweets.addAll(newTweets);
-                aTweets.notifyItemRangeInserted(curSize, newTweets.size());
+                tweetsListFragment.populateTweets(newTweets);
                 maxId = newTweets.get(newTweets.size() - 1).getUid() - 1; // The id of last tweet minus 1
                 long newestTweetId = newTweets.get(0).getUid();
                 sinceId = (sinceId > newestTweetId) ? sinceId : newestTweetId;
@@ -123,13 +112,10 @@ public class TimelineActivity extends AppCompatActivity {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
                 Log.d("DEBUG", response.toString());
-                tweets.clear();
-                aTweets.notifyDataSetChanged();
                 List<Tweet> newTweets = Tweet.fromJSONArray(response);
-                tweets.addAll(newTweets);
-                aTweets.notifyItemRangeInserted(0, newTweets.size());
+                tweetsListFragment.refreshTweets(newTweets);
                 maxId = newTweets.get(newTweets.size() - 1).getUid() - 1; // The id of last tweet minus 1
-                swipeContainer.setRefreshing(false);
+                tweetsListFragment.setRefreshingStateFalse();
             }
 
             @Override
@@ -159,8 +145,7 @@ public class TimelineActivity extends AppCompatActivity {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == RESULT_OK && requestCode == 20) {
             Tweet newTweet = (Tweet) Parcels.unwrap(data.getParcelableExtra("newTweet"));
-            tweets.add(0, newTweet);
-            aTweets.notifyDataSetChanged();
+            tweetsListFragment.addNewTweet(newTweet);
         }
     }
 }
