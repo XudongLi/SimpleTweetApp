@@ -1,5 +1,6 @@
 package com.codepath.apps.simpletweets.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -11,8 +12,11 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.codepath.apps.simpletweets.R;
+import com.codepath.apps.simpletweets.activities.ProfileActivity;
 import com.codepath.apps.simpletweets.adapters.TweetsAdapter;
 import com.codepath.apps.simpletweets.models.Tweet;
+import com.codepath.apps.simpletweets.models.User;
+import com.codepath.apps.simpletweets.utils.ItemClickSupport;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +35,18 @@ public class TweetsListFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_tweets_list, parent, false);
         rvTweets = (RecyclerView) v.findViewById(R.id.rvTweets);
         rvTweets.setAdapter(aTweets);
+        ItemClickSupport.addTo(rvTweets).setOnItemClickListener(
+                new ItemClickSupport.OnItemClickListener() {
+                    @Override
+                    public void onItemClicked(RecyclerView recyclerView, int position, View v) {
+                        User user = tweets.get(position).getUser();
+                        Intent i = new Intent(getActivity(), ProfileActivity.class);
+                        i.putExtra("source", "user");
+                        i.putExtra("screenName", user.getScreenName());
+                        startActivity(i);
+                    }
+                }
+        );
         swipeContainer = (SwipeRefreshLayout) v.findViewById(R.id.swipeContainer);
         // Configure the refreshing colors
         swipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright,
@@ -45,8 +61,6 @@ public class TweetsListFragment extends Fragment {
         super.onCreate(savedInstanceState);
         tweets = new ArrayList<>();
         aTweets = new TweetsAdapter(getActivity(), tweets);
-
-
     }
 
     public void setListenersOnStart(LinearLayoutManager linearLayoutManager,

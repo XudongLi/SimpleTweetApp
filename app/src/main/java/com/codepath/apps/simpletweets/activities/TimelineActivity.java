@@ -61,6 +61,7 @@ public class TimelineActivity extends AppCompatActivity {
             startActivityForResult(i, 20);
         } else if (id == R.id.action_profile) {
             Intent i = new Intent(this, ProfileActivity.class);
+            i.putExtra("source", "self");
             startActivity(i);
         }
         return super.onOptionsItemSelected(item);
