@@ -28,6 +28,7 @@
         android:layout_alignParentTop="true"
         android:layout_toRightOf="@+id/ivProfile"
         android:layout_toEndOf="@+id/ivProfile"
+        android:maxLines="2"
         android:id="@+id/tvName" />
 
     <TextView
